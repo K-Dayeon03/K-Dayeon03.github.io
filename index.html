@@ -3,58 +3,847 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>내 GitHub Pages</title>
+  <meta name="description" content="사용자 경험을 중심으로 고민하며 성장하는 백엔드 개발자 강다연의 GitHub Blog." />
+  <meta property="og:title" content="Dayeon Kang | Backend Developer" />
+  <meta property="og:description" content="Spring Boot, Java, 협업과 테스트를 기록하는 강다연의 개발 공간." />
+  <title>Dayeon Kang | Backend Developer</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 720px;
-      margin: 80px auto;
-      padding: 0 24px;
-      line-height: 1.6;
-      color: #222;
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600&display=swap");
+
+    :root {
+      --paper: #fbf7ee;
+      --paper-strong: #fffdf8;
+      --ink: #182033;
+      --muted: #667085;
+      --grid: rgba(59, 130, 246, 0.12);
+      --green: #6db33f;
+      --blue: #3b82f6;
+      --navy: #0052cc;
+      --red: #e85d4a;
+      --yellow: #f5c842;
+      --purple: #9b59b6;
+      --cyan: #1abc9c;
+      --orange: #e67e22;
+      --pink: #e91e8c;
+      --line: #222b45;
+      --shadow: rgba(24, 32, 51, 0.16);
+      --font-sans: "Pretendard", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-code: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
-    h1 {
-      font-size: 2.4rem;
-      margin-bottom: 12px;
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--font-sans);
+      line-height: 1.7;
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
     }
 
     a {
-      color: #0969da;
+      color: inherit;
+      text-decoration: none;
     }
 
-    .section {
-      margin-top: 40px;
+    .page {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page::before,
+    .page::after {
+      content: "";
+      position: fixed;
+      width: 150px;
+      height: 150px;
+      pointer-events: none;
+      opacity: 0.14;
+      z-index: 0;
+      background:
+        linear-gradient(var(--blue), var(--blue)) 0 48px / 48px 48px no-repeat,
+        linear-gradient(var(--blue), var(--blue)) 48px 48px / 48px 48px no-repeat,
+        linear-gradient(var(--blue), var(--blue)) 96px 48px / 48px 48px no-repeat,
+        linear-gradient(var(--blue), var(--blue)) 48px 96px / 48px 48px no-repeat;
+      filter: drop-shadow(8px 8px 0 rgba(24, 32, 51, 0.2));
+    }
+
+    .page::before {
+      top: 6%;
+      left: 3%;
+      transform: rotate(-14deg);
+    }
+
+    .page::after {
+      right: 2%;
+      bottom: 9%;
+      transform: rotate(18deg);
+      background:
+        linear-gradient(var(--green), var(--green)) 0 0 / 48px 48px no-repeat,
+        linear-gradient(var(--green), var(--green)) 48px 0 / 48px 48px no-repeat,
+        linear-gradient(var(--green), var(--green)) 0 48px / 48px 48px no-repeat,
+        linear-gradient(var(--green), var(--green)) 48px 48px / 48px 48px no-repeat;
+    }
+
+    .wrap {
+      width: min(1120px, calc(100% - 36px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      align-items: center;
+      padding: 48px 0 40px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(310px, 0.95fr);
+      gap: 42px;
+      align-items: center;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      color: var(--paper-strong);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--ink);
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 5px 5px 0 var(--shadow);
+      transform: rotate(-1deg);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.18;
+    }
+
+    h1 {
+      margin-top: 22px;
+      font-family: var(--font-sans);
+      font-size: clamp(3.3rem, 9vw, 6.6rem);
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .hero-name {
+      color: var(--red);
+      text-shadow: 5px 5px 0 rgba(232, 93, 74, 0.18);
+    }
+
+    .intro {
+      max-width: 620px;
+      margin: 22px 0 0;
+      font-size: clamp(1.02rem, 2vw, 1.22rem);
+      color: #465064;
+      word-break: keep-all;
+    }
+
+    .typed {
+      display: inline-flex;
+      margin-top: 18px;
+      padding: 8px 12px;
+      font-family: var(--font-code);
+      font-size: 0.9rem;
+      color: var(--navy);
+      background: rgba(255, 255, 255, 0.7);
+      border: 2px dashed rgba(0, 82, 204, 0.45);
+      border-radius: 8px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      color: var(--paper-strong);
+      font-weight: 800;
+      box-shadow: 5px 5px 0 var(--shadow);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .pill:hover,
+    .pill:focus-visible {
+      transform: translate(-2px, -2px) rotate(-1deg);
+      box-shadow: 8px 8px 0 var(--shadow);
+      outline: none;
+    }
+
+    .pill.github {
+      background: var(--ink);
+    }
+
+    .pill.projects {
+      background: var(--blue);
+    }
+
+    .panel {
+      background: rgba(255, 253, 248, 0.78);
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 9px 9px 0 rgba(24, 32, 51, 0.12);
+    }
+
+    .tetris-panel {
+      padding: 22px;
+      transform: rotate(1deg);
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 10px 14px;
+      color: var(--paper-strong);
+      font-family: var(--font-code);
+      font-size: 0.82rem;
+      background: var(--ink);
+      border-radius: 8px;
+    }
+
+    .block-links {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .block-link {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      min-height: 112px;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: #ffffff;
+      border: 2px dashed rgba(24, 32, 51, 0.38);
+      border-radius: 8px;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .block-link:hover,
+    .block-link:focus-visible {
+      transform: translateY(-4px) rotate(-1deg);
+      background: #fff9df;
+      outline: none;
+    }
+
+    .block-label {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: 1.1rem;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .block-desc {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .tetro {
+      --cell: 24px;
+      --block: var(--blue);
+      --block-dark: #1a4e7e;
+      display: block;
+      position: relative;
+      width: calc(var(--cell) * 3);
+      height: calc(var(--cell) * 3);
+      filter: drop-shadow(5px 5px 0 rgba(24, 32, 51, 0.18));
+    }
+
+    .cell {
+      position: absolute;
+      width: var(--cell);
+      height: var(--cell);
+      background: var(--block);
+      border: 2px dashed var(--block-dark);
+      border-radius: 5px;
+      box-shadow: inset 5px 5px 0 rgba(255, 255, 255, 0.28);
+    }
+
+    .c1 { left: 0; top: 0; }
+    .c2 { left: var(--cell); top: 0; }
+    .c3 { left: calc(var(--cell) * 2); top: 0; }
+    .c4 { left: var(--cell); top: var(--cell); }
+    .shape-o .c1 { left: 0; top: 0; }
+    .shape-o .c2 { left: var(--cell); top: 0; }
+    .shape-o .c3 { left: 0; top: var(--cell); }
+    .shape-o .c4 { left: var(--cell); top: var(--cell); }
+    .shape-l .c1 { left: 0; top: 0; }
+    .shape-l .c2 { left: 0; top: var(--cell); }
+    .shape-l .c3 { left: 0; top: calc(var(--cell) * 2); }
+    .shape-l .c4 { left: var(--cell); top: calc(var(--cell) * 2); }
+    .shape-z .c1 { left: 0; top: 0; }
+    .shape-z .c2 { left: var(--cell); top: 0; }
+    .shape-z .c3 { left: var(--cell); top: var(--cell); }
+    .shape-z .c4 { left: calc(var(--cell) * 2); top: var(--cell); }
+
+    section {
+      padding: 62px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--navy);
+      font-family: var(--font-code);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+    }
+
+    .code-card {
+      padding: 24px;
+      overflow-x: auto;
+      color: #f7fbff;
+      background: #101828;
+    }
+
+    pre {
+      margin: 0;
+      font-family: var(--font-code);
+      font-size: 0.88rem;
+      line-height: 1.75;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.82fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .note-list {
+      display: grid;
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .note-list li,
+    .value-card,
+    .learning-card,
+    .project-card {
+      background: rgba(255, 253, 248, 0.88);
+      border: 2px solid rgba(24, 32, 51, 0.78);
+      border-radius: 8px;
+      box-shadow: 5px 5px 0 rgba(24, 32, 51, 0.1);
+    }
+
+    .note-list li {
+      padding: 15px 16px;
+      word-break: keep-all;
+    }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .stack-card {
+      padding: 20px;
+    }
+
+    .stack-card h3 {
+      margin-bottom: 14px;
+      color: var(--ink);
+      font-size: 1.15rem;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 10px;
+      color: var(--paper-strong);
+      font-size: 0.82rem;
+      font-weight: 800;
+      border: 2px solid rgba(24, 32, 51, 0.42);
+      border-radius: 7px;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .project-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 280px;
+      padding: 20px;
+    }
+
+    .project-card h3 {
+      color: var(--navy);
+      font-size: 1.25rem;
+    }
+
+    .project-card p {
+      margin: 13px 0 16px;
+      color: #475467;
+      word-break: keep-all;
+    }
+
+    .tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: auto;
+    }
+
+    .tech span {
+      padding: 5px 8px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: #25314d;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.28);
+      border-radius: 7px;
+    }
+
+    .highlight-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .highlight {
+      padding: 22px;
+    }
+
+    .highlight code,
+    .process {
+      display: inline-flex;
+      margin: 12px 0 14px;
+      padding: 8px 10px;
+      color: var(--paper-strong);
+      font-family: var(--font-code);
+      font-size: 0.82rem;
+      background: var(--ink);
+      border-radius: 7px;
+    }
+
+    .highlight ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #475467;
+    }
+
+    .highlight li + li {
+      margin-top: 8px;
+    }
+
+    .learning-grid,
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .learning-card,
+    .value-card {
+      padding: 17px;
+    }
+
+    .learning-card strong,
+    .value-card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--navy);
+    }
+
+    .learning-card span,
+    .value-card span {
+      display: block;
+      color: #475467;
+      font-size: 0.92rem;
+      word-break: keep-all;
+    }
+
+    .footer {
+      padding: 46px 0 70px;
+      text-align: center;
+    }
+
+    .footer p {
+      margin: 0 auto;
+      max-width: 560px;
+      color: #475467;
+      font-size: 1.02rem;
+      word-break: keep-all;
+    }
+
+    .footer-bar {
+      height: 46px;
+      margin-top: 30px;
+      border-radius: 0 0 999px 999px;
+      background: linear-gradient(90deg, var(--navy), var(--blue), var(--green));
+      box-shadow: inset 0 8px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        min-height: auto;
+        padding-top: 34px;
+      }
+
+      .hero-grid,
+      .about-grid,
+      .highlight-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tetris-panel {
+        transform: none;
+      }
+
+      .stack-grid,
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .learning-grid,
+      .values-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .wrap {
+        width: min(100% - 24px, 1120px);
+      }
+
+      .page::before,
+      .page::after {
+        display: none;
+      }
+
+      .block-links,
+      .learning-grid,
+      .values-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .block-link {
+        grid-template-columns: 76px 1fr;
+      }
+
+      .scoreboard {
+        flex-direction: column;
+      }
+
+      section {
+        padding: 46px 0;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>안녕하세요, 저는 [이름]입니다.</h1>
+  <div class="page">
+    <main>
+      <section class="hero" id="top">
+        <div class="wrap hero-grid">
+          <div>
+            <span class="tag">Backend Developer</span>
+            <h1>Dayeon<br><span class="hero-name">Kang</span></h1>
+            <p class="intro">
+              사용자 경험을 중심으로 고민하며 성장하는 백엔드 개발자 강다연입니다.
+              Spring Boot 기반 API와 서비스 구조를 설계하고, 팀과 함께 이해할 수 있는 기록과 테스트를 중요하게 생각합니다.
+            </p>
+            <span class="typed">Spring Boot | Java 17 | User-Centered Thinking</span>
+            <div class="hero-actions" aria-label="주요 링크">
+              <a class="pill github" href="https://github.com/K-Dayeon03" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a class="pill projects" href="#projects">Featured Projects</a>
+            </div>
+          </div>
 
-  <p>
-    이곳은 제가 만든 프로젝트와 공부한 내용을 정리하는 개인 페이지입니다.
-  </p>
+          <nav class="panel tetris-panel" aria-label="페이지 바로가기">
+            <div class="scoreboard">
+              <span>BLOCKS: 04</span>
+              <span>LEVEL: 01</span>
+              <span>STACK: SPRING</span>
+            </div>
+            <div class="block-links">
+              <a class="block-link" href="#about">
+                <span class="tetro shape-t" style="--block: var(--red); --block-dark: #8b2718;" aria-hidden="true">
+                  <span class="cell c1"></span><span class="cell c2"></span><span class="cell c3"></span><span class="cell c4"></span>
+                </span>
+                <span><span class="block-label">About</span><span class="block-desc">사용자 흐름에서 문제를 찾는 개발자</span></span>
+              </a>
+              <a class="block-link" href="#stack">
+                <span class="tetro shape-o" style="--block: var(--green); --block-dark: #236223;" aria-hidden="true">
+                  <span class="cell c1"></span><span class="cell c2"></span><span class="cell c3"></span><span class="cell c4"></span>
+                </span>
+                <span><span class="block-label">Stack</span><span class="block-desc">Java, Spring Boot, DB, Infra</span></span>
+              </a>
+              <a class="block-link" href="#projects">
+                <span class="tetro shape-l" style="--block: var(--blue); --block-dark: #1a4e7e;" aria-hidden="true">
+                  <span class="cell c1"></span><span class="cell c2"></span><span class="cell c3"></span><span class="cell c4"></span>
+                </span>
+                <span><span class="block-label">Projects</span><span class="block-desc">Flowre, Compliment Lab, Data Lab</span></span>
+              </a>
+              <a class="block-link" href="#learning">
+                <span class="tetro shape-z" style="--block: var(--yellow); --block-dark: #9a7400;" aria-hidden="true">
+                  <span class="cell c1"></span><span class="cell c2"></span><span class="cell c3"></span><span class="cell c4"></span>
+                </span>
+                <span><span class="block-label">Learning</span><span class="block-desc">테스트와 협업으로 성장하기</span></span>
+              </a>
+            </div>
+          </nav>
+        </div>
+      </section>
 
-  <div class="section">
-    <h2>소개</h2>
-    <p>
-      저는 [관심 분야]에 관심이 있고, 현재 [공부 중인 것/만들고 있는 것]을 하고 있습니다.
-    </p>
-  </div>
+      <section id="about">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">About Me</span>
+              <h2>문제를 먼저 이해하고, 구조를 고민합니다.</h2>
+            </div>
+          </div>
+          <div class="about-grid">
+            <div class="panel code-card">
+<pre><code>public class DayeonKang {
+    private final String role = "Backend Developer";
+    private final String mainStack = "Java, Spring Boot";
+    private final String interest = "사용자 경험을 고려한 API와 서비스 구조";
 
-  <div class="section">
-    <h2>프로젝트</h2>
-    <ul>
-      <li><a href="#">첫 번째 프로젝트</a></li>
-      <li><a href="#">두 번째 프로젝트</a></li>
-    </ul>
-  </div>
+    public void grow() {
+        defineProblemFromUserView();
+        designReadableStructure();
+        collaborateWithTeam();
+        improveThroughTesting();
+    }
+}</code></pre>
+            </div>
+            <ul class="note-list">
+              <li>현재 Spring Boot 기반 백엔드 개발을 중심으로 성장하고 있습니다.</li>
+              <li>기능 구현에서 멈추지 않고, 사용자가 실제로 겪는 흐름과 문제를 함께 고민합니다.</li>
+              <li>팀 프로젝트를 통해 협업, 소통, 테스트, 기록의 중요성을 배웠습니다.</li>
+              <li>Java/Spring 기반 API 개발과 함께 React Native, TypeScript, 데이터 분석도 경험하고 있습니다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-  <div class="section">
-    <h2>연락</h2>
-    <p>
-      GitHub: <a href="https://github.com/[깃허브아이디]">@[깃허브아이디]</a>
-    </p>
+      <section id="stack">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">Tech Stack</span>
+              <h2>서비스를 단단하게 만드는 도구들</h2>
+            </div>
+          </div>
+          <div class="stack-grid">
+            <article class="panel stack-card">
+              <h3>Backend</h3>
+              <div class="badges">
+                <span class="badge" style="background:#007396;">Java 17</span>
+                <span class="badge" style="background:#6db33f;">Spring Boot</span>
+                <span class="badge" style="background:#5a9f40;">Spring Security</span>
+                <span class="badge" style="background:#59666c;">JPA</span>
+                <span class="badge" style="background:#111827;">MyBatis</span>
+                <span class="badge" style="background:#0052cc;">REST API</span>
+              </div>
+            </article>
+            <article class="panel stack-card">
+              <h3>Database &amp; Infra</h3>
+              <div class="badges">
+                <span class="badge" style="background:#4479a1;">MySQL</span>
+                <span class="badge" style="background:#dc382d;">Redis</span>
+                <span class="badge" style="background:#2496ed;">Docker</span>
+                <span class="badge" style="background:#ff9900;">AWS EC2</span>
+                <span class="badge" style="background:#569a31;">AWS S3</span>
+              </div>
+            </article>
+            <article class="panel stack-card">
+              <h3>Frontend &amp; Tools</h3>
+              <div class="badges">
+                <span class="badge" style="background:#3178c6;">TypeScript</span>
+                <span class="badge" style="background:#2b9eb3;">React Native</span>
+                <span class="badge" style="background:#f7df1e;color:#1f2937;">JavaScript</span>
+                <span class="badge" style="background:#f37626;">Jupyter</span>
+                <span class="badge" style="background:#f05032;">Git</span>
+                <span class="badge" style="background:#2088ff;">GitHub Actions</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="projects">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">Featured Projects</span>
+              <h2>만들고, 연결하고, 개선한 기록</h2>
+            </div>
+          </div>
+          <div class="projects-grid">
+            <a class="project-card" href="https://github.com/K-Dayeon03/Flowre-project" target="_blank" rel="noopener noreferrer">
+              <h3>Flowre-project</h3>
+              <p>오프라인 매장 직원과 본사 직원이 스케줄, 문서, 채팅, 공지, 재고를 함께 관리하는 통합 업무관리 플랫폼입니다.</p>
+              <div class="tech">
+                <span>Spring Boot</span><span>Java 17</span><span>React Native</span><span>MySQL</span><span>Redis</span><span>Docker</span><span>AWS</span>
+              </div>
+            </a>
+            <a class="project-card" href="https://github.com/SWYP-Raven/compliment-lab-server" target="_blank" rel="noopener noreferrer">
+              <h3>compliment-lab-server</h3>
+              <p>친구, 사용자, 칭찬 도메인을 중심으로 인증과 API 구조를 구현한 Spring Boot 백엔드 서버입니다.</p>
+              <div class="tech">
+                <span>Spring Boot 3.5</span><span>Java 17</span><span>JPA</span><span>Security</span><span>JWT</span><span>Swagger</span>
+              </div>
+            </a>
+            <a class="project-card" href="https://github.com/K-Dayeon03/python-data-lab" target="_blank" rel="noopener noreferrer">
+              <h3>python-data-lab</h3>
+              <p>Python/Jupyter Notebook 기반 데이터 실습과 분석 흐름을 학습하며 정리한 공간입니다.</p>
+              <div class="tech">
+                <span>Python</span><span>Jupyter Notebook</span><span>Data Analysis</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="highlights">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">Project Highlights</span>
+              <h2>프로젝트 안에서 깊게 고민한 부분</h2>
+            </div>
+          </div>
+          <div class="highlight-grid">
+            <article class="panel highlight">
+              <h3>Flowre</h3>
+              <code>입점 매장 업무관리 플랫폼</code>
+              <ul>
+                <li>역할 기반 권한과 브랜드 단위 데이터 격리 구조를 설계했습니다.</li>
+                <li>JWT 인증, Spring Security, STOMP WebSocket 채팅, Redis, AWS S3를 활용했습니다.</li>
+                <li>매장 등록, 직원 승인, 스케줄, 문서, 공지, 재고 관리 기능을 구현했습니다.</li>
+                <li>서버/클라이언트 테스트와 GitHub Actions 기반 CI 구성을 경험했습니다.</li>
+              </ul>
+            </article>
+            <article class="panel highlight">
+              <h3>Compliment Lab Server</h3>
+              <code>칭찬과 관계 데이터를 다루는 백엔드 서버</code>
+              <ul>
+                <li>사용자, 친구, 칭찬 도메인 중심의 API 구조를 설계했습니다.</li>
+                <li>JWT 기반 인증 흐름과 Spring Security 설정을 구현했습니다.</li>
+                <li>공통 응답, 예외 처리, Swagger 문서화 구성을 정리했습니다.</li>
+                <li>Docker와 GitHub Actions를 활용한 배포 흐름을 경험했습니다.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="learning">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">Currently Learning</span>
+              <h2>요즘 집중하고 있는 성장 방향</h2>
+            </div>
+          </div>
+          <div class="learning-grid">
+            <article class="learning-card"><strong>Spring Boot</strong><span>계층형 구조와 도메인 책임을 더 명확하게 설계하기</span></article>
+            <article class="learning-card"><strong>Security &amp; JWT</strong><span>인증/인가 흐름을 안정적으로 이해하고 구현하기</span></article>
+            <article class="learning-card"><strong>Database</strong><span>조회 성능, 데이터 모델링, 트랜잭션 흐름 익히기</span></article>
+            <article class="learning-card"><strong>Testing</strong><span>변경에 강한 서비스를 위한 테스트 습관 만들기</span></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="values">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">Development Values</span>
+              <h2>개발할 때 놓치고 싶지 않은 기준</h2>
+            </div>
+            <span class="process">Understand -> Design -> Build -> Test</span>
+          </div>
+          <div class="values-grid">
+            <article class="value-card"><strong>User First</strong><span>사용자 흐름에서 문제를 찾습니다.</span></article>
+            <article class="value-card"><strong>Clean Structure</strong><span>읽기 쉽고 유지보수 가능한 구조를 고민합니다.</span></article>
+            <article class="value-card"><strong>Teamwork</strong><span>함께 이해할 수 있는 기록과 소통을 중요하게 생각합니다.</span></article>
+            <article class="value-card"><strong>Testing</strong><span>작은 변경도 안정적으로 개선하려고 노력합니다.</span></article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <p>
+          꾸준히 배우고, 만들고, 개선하며 사용자에게 더 좋은 경험을 주는 백엔드 개발자로 성장하고 있습니다.
+        </p>
+        <div class="footer-bar" aria-hidden="true"></div>
+      </div>
+    </footer>
   </div>
 </body>
 </html>
