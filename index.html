@@ -445,6 +445,153 @@
       display: inline-flex;
     }
 
+    .game-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 18;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(26, 26, 46, 0.62);
+      backdrop-filter: blur(4px);
+    }
+
+    .game-backdrop.open {
+      display: flex;
+    }
+
+    .game-panel {
+      width: min(100%, 520px);
+      padding: 20px;
+      border: 3px solid var(--ink);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: 7px 7px 0 var(--ink);
+      filter: url(#sketchy);
+    }
+
+    .game-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .game-head h2 {
+      margin: 0;
+      font-family: var(--font-hand);
+      font-size: 1.75rem;
+      line-height: 1;
+    }
+
+    .game-score {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      color: #55545c;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .game-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 132px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 3px;
+      aspect-ratio: 10 / 14;
+      padding: 8px;
+      border: 3px solid var(--ink);
+      border-radius: 14px;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        #10101f;
+      background-size: 24px 24px;
+    }
+
+    .game-cell {
+      min-width: 0;
+      min-height: 0;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .game-cell.filled,
+    .game-cell.active {
+      background: var(--cell-color);
+      border-color: var(--cell-border);
+      box-shadow:
+        inset 4px 4px 0 rgba(255, 255, 255, 0.22),
+        2px 2px 0 var(--cell-shadow);
+      cursor: pointer;
+    }
+
+    .game-cell.active {
+      opacity: 0.9;
+    }
+
+    .game-side {
+      display: grid;
+      gap: 9px;
+    }
+
+    .game-now {
+      min-height: 78px;
+      padding: 10px;
+      border: 2px dashed var(--ink);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.62);
+      text-align: center;
+    }
+
+    .game-now strong {
+      display: block;
+      color: var(--red);
+      font-family: var(--font-hand);
+      font-size: 1.1rem;
+      line-height: 1.1;
+    }
+
+    .game-now span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.3;
+      word-break: keep-all;
+    }
+
+    .game-controls {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+    }
+
+    .game-controls .mini-button {
+      justify-content: center;
+      min-height: 38px;
+      padding-inline: 8px;
+      font-size: 0.95rem;
+    }
+
+    .game-message {
+      min-height: 38px;
+      color: #55545c;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
     @keyframes float {
       0%, 100% { translate: 0 0; }
       50% { translate: 0 -6px; }
@@ -476,6 +623,14 @@
       .label {
         font-size: 1.08rem;
       }
+
+      .game-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .game-side {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -505,6 +660,7 @@
           Spring Boot와 Java를 중심으로 서비스 구조, API, 테스트, 협업 기록을 블록처럼 차곡차곡 쌓아갑니다.
         </p>
         <div class="top-actions">
+          <button class="mini-button" id="open-game" type="button">🎮 블록 게임하기</button>
           <button class="mini-button primary" id="open-add-modal" type="button">＋ 블록 추가</button>
           <button class="mini-button" id="toggle-edit-mode" type="button">✏️ 블록 편집</button>
           <a class="mini-button" href="https://github.com/K-Dayeon03" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -570,6 +726,39 @@
           <button class="mini-button cancel" id="close-add-modal" type="button">취소</button>
         </div>
       </form>
+    </div>
+
+    <div class="game-backdrop" id="game-modal" aria-hidden="true">
+      <section class="game-panel" aria-label="블록 게임 프로토타입">
+        <div class="game-head">
+          <div>
+            <h2>🎮 Link Tetris</h2>
+            <div class="game-score">
+              <span>SCORE: <strong id="game-score">0</strong></span>
+              <span>LINES: <strong id="game-lines">0</strong></span>
+            </div>
+          </div>
+          <button class="mini-button" id="close-game" type="button">닫기</button>
+        </div>
+        <div class="game-layout">
+          <div class="game-board" id="game-board" aria-label="게임 보드"></div>
+          <aside class="game-side">
+            <div class="game-now">
+              <strong id="game-current-name">READY</strong>
+              <span id="game-current-desc">내 블록들이 떨어집니다.</span>
+            </div>
+            <div class="game-controls">
+              <button class="mini-button" id="game-left" type="button">←</button>
+              <button class="mini-button" id="game-right" type="button">→</button>
+              <button class="mini-button" id="game-rotate" type="button">↻</button>
+              <button class="mini-button primary" id="game-drop" type="button">DROP</button>
+            </div>
+            <p class="game-message" id="game-message">
+              방향키로 움직이고, 쌓인 블록 칸을 누르면 링크가 열립니다.
+            </p>
+          </aside>
+        </div>
+      </section>
     </div>
   </div>
   <script>
@@ -797,6 +986,260 @@
       saveBlocks();
       renderBlocks();
       closeModal();
+    });
+
+    const gameModal = document.querySelector("#game-modal");
+    const gameBoard = document.querySelector("#game-board");
+    const gameScore = document.querySelector("#game-score");
+    const gameLines = document.querySelector("#game-lines");
+    const gameCurrentName = document.querySelector("#game-current-name");
+    const gameCurrentDesc = document.querySelector("#game-current-desc");
+    const gameMessage = document.querySelector("#game-message");
+    const gameCols = 10;
+    const gameRows = 14;
+    const shapeCells = {
+      "shape-i": [[0, 0], [0, 1], [0, 2], [0, 3]],
+      "shape-o": [[0, 0], [0, 1], [1, 0], [1, 1]],
+      "shape-t": [[0, 0], [0, 1], [0, 2], [1, 1]],
+      "shape-s": [[0, 1], [0, 2], [1, 0], [1, 1]],
+      "shape-z": [[0, 0], [0, 1], [1, 1], [1, 2]],
+      "shape-l": [[0, 0], [1, 0], [2, 0], [2, 1]],
+      "shape-j": [[0, 1], [1, 1], [2, 0], [2, 1]]
+    };
+    let gameGrid = [];
+    let gameCells = [];
+    let activePiece = null;
+    let gameTimer = null;
+    let score = 0;
+    let lines = 0;
+    let nextBlockIndex = 0;
+    let gameOverNotified = false;
+
+    function buildGameBoard() {
+      gameBoard.innerHTML = "";
+      gameCells = [];
+      for (let row = 0; row < gameRows; row += 1) {
+        for (let col = 0; col < gameCols; col += 1) {
+          const cell = document.createElement("button");
+          cell.className = "game-cell";
+          cell.type = "button";
+          cell.dataset.row = row;
+          cell.dataset.col = col;
+          cell.addEventListener("click", () => openCellLink(row, col));
+          gameCells.push(cell);
+          gameBoard.appendChild(cell);
+        }
+      }
+    }
+
+    function emptyGrid() {
+      return Array.from({ length: gameRows }, () => Array.from({ length: gameCols }, () => null));
+    }
+
+    function rotatedCells(cells) {
+      const rotated = cells.map(([row, col]) => [col, -row]);
+      const minRow = Math.min(...rotated.map(([row]) => row));
+      const minCol = Math.min(...rotated.map(([, col]) => col));
+      return rotated.map(([row, col]) => [row - minRow, col - minCol]);
+    }
+
+    function activeCells(piece = activePiece) {
+      if (!piece) return [];
+      return piece.cells.map(([row, col]) => [piece.row + row, piece.col + col]);
+    }
+
+    function canPlace(piece) {
+      return activeCells(piece).every(([row, col]) => (
+        row >= 0 &&
+        row < gameRows &&
+        col >= 0 &&
+        col < gameCols &&
+        !gameGrid[row][col]
+      ));
+    }
+
+    function spawnPiece() {
+      if (!blocks.length) {
+        gameMessage.textContent = "먼저 블록을 추가해 주세요.";
+        return;
+      }
+      const block = blocks[nextBlockIndex % blocks.length];
+      nextBlockIndex += 1;
+      const cells = shapeCells[safeShape(block.shape)] || shapeCells["shape-t"];
+      activePiece = {
+        block,
+        cells,
+        row: 0,
+        col: Math.floor(gameCols / 2) - 2
+      };
+      gameCurrentName.textContent = `${block.emoji} ${block.label}`;
+      gameCurrentDesc.textContent = block.description || "쌓인 칸을 누르면 링크가 열립니다.";
+      if (!canPlace(activePiece)) {
+        clearInterval(gameTimer);
+        gameTimer = null;
+        activePiece = null;
+        gameMessage.textContent = "GAME OVER · 다시 시작하면 보드가 초기화됩니다.";
+        if (!gameOverNotified) {
+          gameOverNotified = true;
+          setTimeout(() => {
+            alert(`게임 종료! 최종 점수는 ${score}점입니다. 지운 줄: ${lines}줄`);
+          }, 50);
+        }
+      }
+    }
+
+    function lockPiece() {
+      if (!activePiece) return;
+      const colors = palette[activePiece.block.color] || palette.red;
+      activeCells().forEach(([row, col]) => {
+        if (row >= 0 && row < gameRows && col >= 0 && col < gameCols) {
+          gameGrid[row][col] = {
+            block: activePiece.block,
+            color: colors.block,
+            shadow: colors.shadow,
+            border: colors.border
+          };
+        }
+      });
+      score += activeCells().length;
+      clearLines();
+      spawnPiece();
+    }
+
+    function clearLines() {
+      let cleared = 0;
+      gameGrid = gameGrid.filter((row) => {
+        const full = row.every(Boolean);
+        if (full) cleared += 1;
+        return !full;
+      });
+      while (gameGrid.length < gameRows) {
+        gameGrid.unshift(Array.from({ length: gameCols }, () => null));
+      }
+      if (cleared) {
+        lines += cleared;
+        gameMessage.textContent = `${cleared}줄 클리어!`;
+      }
+    }
+
+    function movePiece(deltaRow, deltaCol) {
+      if (!activePiece) return false;
+      const next = { ...activePiece, row: activePiece.row + deltaRow, col: activePiece.col + deltaCol };
+      if (canPlace(next)) {
+        activePiece = next;
+        drawGame();
+        return true;
+      }
+      return false;
+    }
+
+    function rotatePiece() {
+      if (!activePiece) return;
+      const next = { ...activePiece, cells: rotatedCells(activePiece.cells) };
+      if (canPlace(next)) {
+        activePiece = next;
+        drawGame();
+      }
+    }
+
+    function hardDrop() {
+      if (!activePiece) return;
+      while (movePiece(1, 0)) {}
+      lockPiece();
+      drawGame();
+    }
+
+    function tickGame() {
+      if (!activePiece) {
+        spawnPiece();
+      } else if (!movePiece(1, 0)) {
+        lockPiece();
+      }
+      drawGame();
+    }
+
+    function drawGame() {
+      const activeSet = new Set(activeCells().map(([row, col]) => `${row}:${col}`));
+      const activeColors = activePiece ? (palette[activePiece.block.color] || palette.red) : null;
+      gameCells.forEach((cell) => {
+        const row = Number(cell.dataset.row);
+        const col = Number(cell.dataset.col);
+        const locked = gameGrid[row][col];
+        const isActive = activeSet.has(`${row}:${col}`);
+        cell.className = "game-cell";
+        cell.style.removeProperty("--cell-color");
+        cell.style.removeProperty("--cell-shadow");
+        cell.style.removeProperty("--cell-border");
+
+        if (locked) {
+          cell.classList.add("filled");
+          cell.style.setProperty("--cell-color", locked.color);
+          cell.style.setProperty("--cell-shadow", locked.shadow);
+          cell.style.setProperty("--cell-border", locked.border);
+        } else if (isActive && activeColors) {
+          cell.classList.add("active");
+          cell.style.setProperty("--cell-color", activeColors.block);
+          cell.style.setProperty("--cell-shadow", activeColors.shadow);
+          cell.style.setProperty("--cell-border", activeColors.border);
+        }
+      });
+      gameScore.textContent = score;
+      gameLines.textContent = lines;
+    }
+
+    function openCellLink(row, col) {
+      const locked = gameGrid[row]?.[col];
+      if (!locked) return;
+      window.open(normalizeUrl(locked.block.url), "_blank", "noopener,noreferrer");
+    }
+
+    function startGame() {
+      buildGameBoard();
+      gameGrid = emptyGrid();
+      score = 0;
+      lines = 0;
+      nextBlockIndex = 0;
+      gameOverNotified = false;
+      activePiece = null;
+      gameMessage.textContent = "방향키로 움직이고, 쌓인 블록 칸을 누르면 링크가 열립니다.";
+      tickGame();
+      clearInterval(gameTimer);
+      gameTimer = setInterval(tickGame, 650);
+    }
+
+    function openGame() {
+      alert("현재 가진 블록들로 게임이 진행됩니다.");
+      gameModal.classList.add("open");
+      gameModal.setAttribute("aria-hidden", "false");
+      startGame();
+    }
+
+    function closeGame() {
+      gameModal.classList.remove("open");
+      gameModal.setAttribute("aria-hidden", "true");
+      clearInterval(gameTimer);
+      gameTimer = null;
+    }
+
+    document.querySelector("#open-game").addEventListener("click", openGame);
+    document.querySelector("#close-game").addEventListener("click", closeGame);
+    document.querySelector("#game-left").addEventListener("click", () => movePiece(0, -1));
+    document.querySelector("#game-right").addEventListener("click", () => movePiece(0, 1));
+    document.querySelector("#game-rotate").addEventListener("click", rotatePiece);
+    document.querySelector("#game-drop").addEventListener("click", hardDrop);
+    gameModal.addEventListener("click", (event) => {
+      if (event.target === gameModal) closeGame();
+    });
+    window.addEventListener("keydown", (event) => {
+      if (!gameModal.classList.contains("open")) return;
+      if (event.key === "ArrowLeft") movePiece(0, -1);
+      if (event.key === "ArrowRight") movePiece(0, 1);
+      if (event.key === "ArrowDown") movePiece(1, 0);
+      if (event.key === "ArrowUp") rotatePiece();
+      if (event.key === " ") {
+        event.preventDefault();
+        hardDrop();
+      }
     });
   </script>
 </body>
