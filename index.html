@@ -3,33 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="사용자 경험을 중심으로 고민하며 성장하는 백엔드 개발자 강다연의 GitHub Blog." />
+  <meta name="description" content="Spring Boot, Java, 협업과 테스트를 기록하는 강다연의 개발 공간." />
   <meta property="og:title" content="Dayeon Kang | Backend Developer" />
-  <meta property="og:description" content="Spring Boot, Java, 협업과 테스트를 기록하는 강다연의 개발 공간." />
+  <meta property="og:description" content="테트리스 블록처럼 쌓아가는 강다연의 백엔드 개발 기록." />
   <title>Dayeon Kang | Backend Developer</title>
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@500;600;700;800&display=swap");
     @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
-    @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600&display=swap");
 
     :root {
-      --paper: #fbf7ee;
-      --paper-strong: #fffdf8;
-      --ink: #182033;
-      --muted: #667085;
-      --grid: rgba(59, 130, 246, 0.12);
-      --green: #6db33f;
-      --blue: #3b82f6;
-      --navy: #0052cc;
+      --paper: #faf8f3;
+      --ink: #1a1a2e;
+      --muted: #66656c;
+      --grid: rgba(100, 120, 180, 0.12);
       --red: #e85d4a;
-      --yellow: #f5c842;
+      --blue: #4a90d9;
+      --green: #5cb85c;
       --purple: #9b59b6;
-      --cyan: #1abc9c;
       --orange: #e67e22;
+      --cyan: #1abc9c;
+      --yellow: #f5c842;
       --pink: #e91e8c;
-      --line: #222b45;
-      --shadow: rgba(24, 32, 51, 0.16);
-      --font-sans: "Pretendard", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-code: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-hand: "Caveat", cursive;
+      --font-body: "Nunito", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
     }
 
     * {
@@ -43,8 +39,7 @@
     body {
       margin: 0;
       color: var(--ink);
-      font-family: var(--font-sans);
-      line-height: 1.7;
+      font-family: var(--font-body);
       background-color: var(--paper);
       background-image:
         linear-gradient(var(--grid) 1px, transparent 1px),
@@ -57,793 +52,752 @@
       text-decoration: none;
     }
 
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
     .page {
       position: relative;
+      min-height: 100vh;
       overflow: hidden;
     }
 
-    .page::before,
-    .page::after {
-      content: "";
-      position: fixed;
-      width: 150px;
-      height: 150px;
-      pointer-events: none;
-      opacity: 0.14;
-      z-index: 0;
-      background:
-        linear-gradient(var(--blue), var(--blue)) 0 48px / 48px 48px no-repeat,
-        linear-gradient(var(--blue), var(--blue)) 48px 48px / 48px 48px no-repeat,
-        linear-gradient(var(--blue), var(--blue)) 96px 48px / 48px 48px no-repeat,
-        linear-gradient(var(--blue), var(--blue)) 48px 96px / 48px 48px no-repeat;
-      filter: drop-shadow(8px 8px 0 rgba(24, 32, 51, 0.2));
-    }
-
-    .page::before {
-      top: 6%;
-      left: 3%;
-      transform: rotate(-14deg);
-    }
-
-    .page::after {
-      right: 2%;
-      bottom: 9%;
-      transform: rotate(18deg);
-      background:
-        linear-gradient(var(--green), var(--green)) 0 0 / 48px 48px no-repeat,
-        linear-gradient(var(--green), var(--green)) 48px 0 / 48px 48px no-repeat,
-        linear-gradient(var(--green), var(--green)) 0 48px / 48px 48px no-repeat,
-        linear-gradient(var(--green), var(--green)) 48px 48px / 48px 48px no-repeat;
-    }
-
     .wrap {
-      width: min(1120px, calc(100% - 36px));
+      width: min(720px, calc(100% - 32px));
       margin: 0 auto;
       position: relative;
       z-index: 1;
     }
 
-    .hero {
-      min-height: 92vh;
-      display: grid;
-      align-items: center;
-      padding: 48px 0 40px;
+    .floating-piece {
+      position: fixed;
+      pointer-events: none;
+      opacity: 0.16;
+      z-index: 0;
+      animation: float 3.4s ease-in-out infinite;
     }
 
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(310px, 0.95fr);
-      gap: 42px;
-      align-items: center;
+    .floating-piece.one {
+      left: 3%;
+      top: 9%;
+      transform: rotate(15deg);
+    }
+
+    .floating-piece.two {
+      right: 4%;
+      top: 18%;
+      transform: rotate(-10deg);
+      animation-delay: 0.4s;
+    }
+
+    .floating-piece.three {
+      left: 2%;
+      bottom: 16%;
+      transform: rotate(20deg);
+      animation-delay: 0.8s;
+    }
+
+    .hero {
+      padding: 44px 0 30px;
+      text-align: center;
     }
 
     .tag {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      color: var(--paper-strong);
-      font-size: 0.82rem;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      padding: 8px 20px;
+      color: var(--paper);
       background: var(--ink);
-      border: 3px solid var(--line);
-      border-radius: 8px;
-      box-shadow: 5px 5px 0 var(--shadow);
+      border: 3px solid var(--ink);
+      border-radius: 10px;
+      font-family: var(--font-hand);
+      font-size: 1.12rem;
+      font-weight: 700;
+      letter-spacing: 0;
       transform: rotate(-1deg);
+      filter: url(#sketchy);
     }
 
     h1,
     h2,
-    h3 {
+    h3,
+    p {
       margin: 0;
-      line-height: 1.18;
     }
 
     h1 {
-      margin-top: 22px;
-      font-family: var(--font-sans);
-      font-size: clamp(3.3rem, 9vw, 6.6rem);
-      font-weight: 900;
+      margin-top: 16px;
+      font-family: var(--font-hand);
+      font-size: clamp(3rem, 10vw, 4.7rem);
+      font-weight: 700;
+      line-height: 0.98;
       letter-spacing: 0;
     }
 
-    .hero-name {
+    .handle {
       color: var(--red);
-      text-shadow: 5px 5px 0 rgba(232, 93, 74, 0.18);
+    }
+
+    .scribble {
+      width: 190px;
+      height: 16px;
+      margin: 8px auto 17px;
     }
 
     .intro {
-      max-width: 620px;
-      margin: 22px 0 0;
-      font-size: clamp(1.02rem, 2vw, 1.22rem);
-      color: #465064;
+      max-width: 430px;
+      margin: 0 auto;
+      color: #55545c;
+      font-size: 0.98rem;
+      line-height: 1.7;
       word-break: keep-all;
     }
 
-    .typed {
-      display: inline-flex;
-      margin-top: 18px;
-      padding: 8px 12px;
-      font-family: var(--font-code);
-      font-size: 0.9rem;
-      color: var(--navy);
-      background: rgba(255, 255, 255, 0.7);
-      border: 2px dashed rgba(0, 82, 204, 0.45);
-      border-radius: 8px;
-    }
-
-    .hero-actions {
+    .top-actions {
       display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 28px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
       justify-content: center;
-      min-height: 44px;
-      padding: 10px 16px;
-      border: 3px solid var(--line);
-      border-radius: 8px;
-      color: var(--paper-strong);
-      font-weight: 800;
-      box-shadow: 5px 5px 0 var(--shadow);
-      transition: transform 160ms ease, box-shadow 160ms ease;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
     }
 
-    .pill:hover,
-    .pill:focus-visible {
-      transform: translate(-2px, -2px) rotate(-1deg);
-      box-shadow: 8px 8px 0 var(--shadow);
-      outline: none;
-    }
-
-    .pill.github {
-      background: var(--ink);
-    }
-
-    .pill.projects {
-      background: var(--blue);
-    }
-
-    .panel {
-      background: rgba(255, 253, 248, 0.78);
-      border: 3px solid var(--line);
-      border-radius: 8px;
-      box-shadow: 9px 9px 0 rgba(24, 32, 51, 0.12);
-    }
-
-    .tetris-panel {
-      padding: 22px;
-      transform: rotate(1deg);
-    }
-
-    .scoreboard {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
-      padding: 10px 14px;
-      color: var(--paper-strong);
-      font-family: var(--font-code);
-      font-size: 0.82rem;
-      background: var(--ink);
-      border-radius: 8px;
-    }
-
-    .block-links {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .block-link {
-      display: grid;
-      grid-template-columns: 86px 1fr;
-      min-height: 112px;
+    .mini-button {
+      display: inline-flex;
       align-items: center;
-      gap: 10px;
-      padding: 12px;
-      background: #ffffff;
-      border: 2px dashed rgba(24, 32, 51, 0.38);
-      border-radius: 8px;
-      transition: transform 160ms ease, background 160ms ease;
+      min-height: 36px;
+      padding: 6px 18px;
+      border: 2px dashed var(--ink);
+      border-radius: 10px;
+      background: rgba(250, 248, 243, 0.85);
+      color: var(--ink);
+      font-family: var(--font-hand);
+      font-size: 1.02rem;
+      font-weight: 700;
+      cursor: pointer;
     }
 
-    .block-link:hover,
-    .block-link:focus-visible {
-      transform: translateY(-4px) rotate(-1deg);
-      background: #fff9df;
+    .mini-button.primary {
+      color: #fff;
+      background: var(--red);
+      border: 2px solid #8b2718;
+      box-shadow: 3px 3px 0 #8b2718;
+    }
+
+    .mini-button.active {
+      color: #fff;
+      background: var(--ink);
+      border-style: solid;
+    }
+
+    .link-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 8px;
+      padding: 16px;
+      border: 3px solid var(--ink);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.58);
+      backdrop-filter: blur(4px);
+      filter: url(#sketchy);
+    }
+
+    .block-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      min-height: 142px;
+      padding: 14px 10px;
+      text-align: center;
+      user-select: none;
+      border-radius: 14px;
+      transition: transform 150ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 150ms ease;
+    }
+
+    .block-card:hover,
+    .block-card:focus-visible {
+      transform: translate(-2px, -3px) rotate(-1.5deg) scale(1.04);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.22));
       outline: none;
     }
 
-    .block-label {
-      display: block;
-      font-family: var(--font-sans);
-      font-size: 1.1rem;
-      font-weight: 900;
-      line-height: 1.15;
+    .link-board.edit-mode .block-card {
+      position: relative;
+      border: 2px dashed currentColor;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
     }
 
-    .block-desc {
-      display: block;
+    .link-board.edit-mode .block-card::after {
+      content: "✏️ 블록 편집";
       margin-top: 6px;
-      color: var(--muted);
-      font-size: 0.82rem;
-      line-height: 1.45;
-      word-break: keep-all;
+      color: var(--red);
+      font-size: 0.72rem;
+      font-weight: 800;
     }
 
     .tetro {
       --cell: 24px;
-      --block: var(--blue);
-      --block-dark: #1a4e7e;
-      display: block;
+      --block: var(--red);
+      --shadow: #b83a29;
+      --border: #8b2718;
       position: relative;
-      width: calc(var(--cell) * 3);
-      height: calc(var(--cell) * 3);
-      filter: drop-shadow(5px 5px 0 rgba(24, 32, 51, 0.18));
+      display: block;
+      width: calc(var(--cell) * var(--cols, 4));
+      height: calc(var(--cell) * var(--rows, 3));
+      margin-bottom: 8px;
+      filter: drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.15));
     }
 
-    .cell {
+    .tetro i {
       position: absolute;
-      width: var(--cell);
-      height: var(--cell);
-      background: var(--block);
-      border: 2px dashed var(--block-dark);
+      width: calc(var(--cell) - 2px);
+      height: calc(var(--cell) - 2px);
+      border: 1.5px dashed var(--border);
       border-radius: 5px;
-      box-shadow: inset 5px 5px 0 rgba(255, 255, 255, 0.28);
+      background: var(--block);
+      box-shadow:
+        3px 3px 0 var(--shadow),
+        inset 4px 4px 0 rgba(255, 255, 255, 0.22);
     }
 
-    .c1 { left: 0; top: 0; }
-    .c2 { left: var(--cell); top: 0; }
-    .c3 { left: calc(var(--cell) * 2); top: 0; }
-    .c4 { left: var(--cell); top: var(--cell); }
-    .shape-o .c1 { left: 0; top: 0; }
-    .shape-o .c2 { left: var(--cell); top: 0; }
-    .shape-o .c3 { left: 0; top: var(--cell); }
-    .shape-o .c4 { left: var(--cell); top: var(--cell); }
-    .shape-l .c1 { left: 0; top: 0; }
-    .shape-l .c2 { left: 0; top: var(--cell); }
-    .shape-l .c3 { left: 0; top: calc(var(--cell) * 2); }
-    .shape-l .c4 { left: var(--cell); top: calc(var(--cell) * 2); }
-    .shape-z .c1 { left: 0; top: 0; }
-    .shape-z .c2 { left: var(--cell); top: 0; }
-    .shape-z .c3 { left: var(--cell); top: var(--cell); }
-    .shape-z .c4 { left: calc(var(--cell) * 2); top: var(--cell); }
+    .shape-i { --cols: 4; --rows: 1; }
+    .shape-i i:nth-child(1) { left: 0; top: 0; }
+    .shape-i i:nth-child(2) { left: var(--cell); top: 0; }
+    .shape-i i:nth-child(3) { left: calc(var(--cell) * 2); top: 0; }
+    .shape-i i:nth-child(4) { left: calc(var(--cell) * 3); top: 0; }
 
-    section {
-      padding: 62px 0;
-    }
+    .shape-o { --cols: 2; --rows: 2; }
+    .shape-o i:nth-child(1) { left: 0; top: 0; }
+    .shape-o i:nth-child(2) { left: var(--cell); top: 0; }
+    .shape-o i:nth-child(3) { left: 0; top: var(--cell); }
+    .shape-o i:nth-child(4) { left: var(--cell); top: var(--cell); }
 
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 22px;
-    }
+    .shape-t { --cols: 3; --rows: 2; }
+    .shape-t i:nth-child(1) { left: 0; top: 0; }
+    .shape-t i:nth-child(2) { left: var(--cell); top: 0; }
+    .shape-t i:nth-child(3) { left: calc(var(--cell) * 2); top: 0; }
+    .shape-t i:nth-child(4) { left: var(--cell); top: var(--cell); }
 
-    .eyebrow {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--navy);
-      font-family: var(--font-code);
-      font-size: 0.78rem;
+    .shape-s { --cols: 3; --rows: 2; }
+    .shape-s i:nth-child(1) { left: var(--cell); top: 0; }
+    .shape-s i:nth-child(2) { left: calc(var(--cell) * 2); top: 0; }
+    .shape-s i:nth-child(3) { left: 0; top: var(--cell); }
+    .shape-s i:nth-child(4) { left: var(--cell); top: var(--cell); }
+
+    .shape-z { --cols: 3; --rows: 2; }
+    .shape-z i:nth-child(1) { left: 0; top: 0; }
+    .shape-z i:nth-child(2) { left: var(--cell); top: 0; }
+    .shape-z i:nth-child(3) { left: var(--cell); top: var(--cell); }
+    .shape-z i:nth-child(4) { left: calc(var(--cell) * 2); top: var(--cell); }
+
+    .shape-l { --cols: 2; --rows: 3; }
+    .shape-l i:nth-child(1) { left: 0; top: 0; }
+    .shape-l i:nth-child(2) { left: 0; top: var(--cell); }
+    .shape-l i:nth-child(3) { left: 0; top: calc(var(--cell) * 2); }
+    .shape-l i:nth-child(4) { left: var(--cell); top: calc(var(--cell) * 2); }
+
+    .shape-j { --cols: 2; --rows: 3; }
+    .shape-j i:nth-child(1) { left: var(--cell); top: 0; }
+    .shape-j i:nth-child(2) { left: var(--cell); top: var(--cell); }
+    .shape-j i:nth-child(3) { left: 0; top: calc(var(--cell) * 2); }
+    .shape-j i:nth-child(4) { left: var(--cell); top: calc(var(--cell) * 2); }
+
+    .label {
+      color: var(--border);
+      font-family: var(--font-hand);
+      font-size: 1.22rem;
       font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      line-height: 1.15;
     }
 
-    h2 {
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      font-weight: 800;
-    }
-
-    .code-card {
-      padding: 24px;
-      overflow-x: auto;
-      color: #f7fbff;
-      background: #101828;
-    }
-
-    pre {
-      margin: 0;
-      font-family: var(--font-code);
-      font-size: 0.88rem;
-      line-height: 1.75;
-    }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.82fr);
-      gap: 22px;
-      align-items: stretch;
-    }
-
-    .note-list {
-      display: grid;
-      gap: 14px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .note-list li,
-    .value-card,
-    .learning-card,
-    .project-card {
-      background: rgba(255, 253, 248, 0.88);
-      border: 2px solid rgba(24, 32, 51, 0.78);
-      border-radius: 8px;
-      box-shadow: 5px 5px 0 rgba(24, 32, 51, 0.1);
-    }
-
-    .note-list li {
-      padding: 15px 16px;
-      word-break: keep-all;
-    }
-
-    .stack-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .stack-card {
-      padding: 20px;
-    }
-
-    .stack-card h3 {
-      margin-bottom: 14px;
-      color: var(--ink);
-      font-size: 1.15rem;
-    }
-
-    .badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      min-height: 34px;
-      padding: 6px 10px;
-      color: var(--paper-strong);
-      font-size: 0.82rem;
-      font-weight: 800;
-      border: 2px solid rgba(24, 32, 51, 0.42);
-      border-radius: 7px;
-    }
-
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .project-card {
-      display: flex;
-      flex-direction: column;
-      min-height: 280px;
-      padding: 20px;
-    }
-
-    .project-card h3 {
-      color: var(--navy);
-      font-size: 1.25rem;
-    }
-
-    .project-card p {
-      margin: 13px 0 16px;
-      color: #475467;
-      word-break: keep-all;
-    }
-
-    .tech {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-top: auto;
-    }
-
-    .tech span {
-      padding: 5px 8px;
+    .desc {
+      display: block;
+      margin-top: 2px;
+      color: #666;
       font-size: 0.76rem;
-      font-weight: 800;
-      color: #25314d;
-      background: rgba(59, 130, 246, 0.1);
-      border: 1px solid rgba(59, 130, 246, 0.28);
-      border-radius: 7px;
+      line-height: 1.35;
+      word-break: keep-all;
     }
 
-    .highlight-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
-    }
-
-    .highlight {
-      padding: 22px;
-    }
-
-    .highlight code,
-    .process {
-      display: inline-flex;
-      margin: 12px 0 14px;
-      padding: 8px 10px;
-      color: var(--paper-strong);
-      font-family: var(--font-code);
-      font-size: 0.82rem;
+    .score-footer {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      width: fit-content;
+      margin: 44px auto 50px;
+      padding: 10px 24px;
+      color: var(--paper);
       background: var(--ink);
-      border-radius: 7px;
+      border-radius: 12px;
+      font-family: var(--font-hand);
+      font-size: 1.08rem;
+      filter: url(#sketchy);
+      transform: rotate(0.5deg);
     }
 
-    .highlight ul {
-      margin: 0;
-      padding-left: 20px;
-      color: #475467;
+    .score-footer strong {
+      color: var(--yellow);
     }
 
-    .highlight li + li {
-      margin-top: 8px;
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(26, 26, 46, 0.55);
+      backdrop-filter: blur(4px);
     }
 
-    .learning-grid,
-    .values-grid {
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: min(100%, 420px);
+      padding: 26px 22px 22px;
+      border: 3px solid var(--ink);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: 6px 6px 0 var(--ink);
+      filter: url(#sketchy);
+    }
+
+    .modal h2 {
+      margin: 0 0 18px;
+      font-family: var(--font-hand);
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .field {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
+      gap: 5px;
+      margin-bottom: 13px;
     }
 
-    .learning-card,
-    .value-card {
-      padding: 17px;
+    .field label {
+      color: #444;
+      font-family: var(--font-hand);
+      font-size: 1.05rem;
+      font-weight: 700;
     }
 
-    .learning-card strong,
-    .value-card strong {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--navy);
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 40px;
+      padding: 8px 11px;
+      border: 2px solid #c9c5bc;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
     }
 
-    .learning-card span,
-    .value-card span {
-      display: block;
-      color: #475467;
-      font-size: 0.92rem;
-      word-break: keep-all;
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--ink);
+      box-shadow: 2px 2px 0 rgba(26, 26, 46, 0.16);
     }
 
-    .footer {
-      padding: 46px 0 70px;
-      text-align: center;
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
     }
 
-    .footer p {
-      margin: 0 auto;
-      max-width: 560px;
-      color: #475467;
-      font-size: 1.02rem;
-      word-break: keep-all;
+    .modal-actions button {
+      min-height: 42px;
+      cursor: pointer;
     }
 
-    .footer-bar {
-      height: 46px;
-      margin-top: 30px;
-      border-radius: 0 0 999px 999px;
-      background: linear-gradient(90deg, var(--navy), var(--blue), var(--green));
-      box-shadow: inset 0 8px 0 rgba(255, 255, 255, 0.2);
+    .modal-actions .mini-button {
+      justify-content: center;
+      flex: 1;
     }
 
-    @media (max-width: 900px) {
+    .modal-actions .cancel {
+      flex: 0 0 auto;
+      background: #fff;
+    }
+
+    .modal-actions .delete {
+      display: none;
+      flex: 0 0 auto;
+      color: var(--red);
+      background: #fff;
+      border-color: var(--red);
+      border-style: solid;
+    }
+
+    .modal.editing .modal-actions .delete {
+      display: inline-flex;
+    }
+
+    @keyframes float {
+      0%, 100% { translate: 0 0; }
+      50% { translate: 0 -6px; }
+    }
+
+    @media (max-width: 520px) {
+      .wrap {
+        width: min(100% - 24px, 720px);
+      }
+
       .hero {
-        min-height: auto;
         padding-top: 34px;
       }
 
-      .hero-grid,
-      .about-grid,
-      .highlight-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .tetris-panel {
-        transform: none;
-      }
-
-      .stack-grid,
-      .projects-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .learning-grid,
-      .values-grid {
+      .link-board {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 560px) {
-      .wrap {
-        width: min(100% - 24px, 1120px);
+        padding: 12px;
       }
 
-      .page::before,
-      .page::after {
-        display: none;
+      .block-card {
+        min-height: 132px;
+        padding: 12px 4px;
       }
 
-      .block-links,
-      .learning-grid,
-      .values-grid {
-        grid-template-columns: 1fr;
+      .tetro {
+        --cell: 21px;
       }
 
-      .block-link {
-        grid-template-columns: 76px 1fr;
-      }
-
-      .scoreboard {
-        flex-direction: column;
-      }
-
-      section {
-        padding: 46px 0;
+      .label {
+        font-size: 1.08rem;
       }
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <main>
-      <section class="hero" id="top">
-        <div class="wrap hero-grid">
-          <div>
-            <span class="tag">Backend Developer</span>
-            <h1>Dayeon<br><span class="hero-name">Kang</span></h1>
-            <p class="intro">
-              사용자 경험을 중심으로 고민하며 성장하는 백엔드 개발자 강다연입니다.
-              Spring Boot 기반 API와 서비스 구조를 설계하고, 팀과 함께 이해할 수 있는 기록과 테스트를 중요하게 생각합니다.
-            </p>
-            <span class="typed">Spring Boot | Java 17 | User-Centered Thinking</span>
-            <div class="hero-actions" aria-label="주요 링크">
-              <a class="pill github" href="https://github.com/K-Dayeon03" target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a class="pill projects" href="#projects">Featured Projects</a>
-            </div>
-          </div>
+    <svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;">
+      <defs>
+        <filter id="sketchy">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
 
-          <nav class="panel tetris-panel" aria-label="페이지 바로가기">
-            <div class="scoreboard">
-              <span>BLOCKS: 04</span>
-              <span>LEVEL: 01</span>
-              <span>STACK: SPRING</span>
-            </div>
-            <div class="block-links">
-              <a class="block-link" href="#about">
-                <span class="tetro shape-t" style="--block: var(--red); --block-dark: #8b2718;" aria-hidden="true">
-                  <span class="cell c1"></span><span class="cell c2"></span><span class="cell c3"></span><span class="cell c4"></span>
-                </span>
-                <span><span class="block-label">About</span><span class="block-desc">사용자 흐름에서 문제를 찾는 개발자</span></span>
-              </a>
-              <a class="block-link" href="#stack">
-                <span class="tetro shape-o" style="--block: var(--green); --block-dark: #236223;" aria-hidden="true">
-                  <span class="cell c1"></span><span class="cell c2"></span><span class="cell c3"></span><span class="cell c4"></span>
-                </span>
-                <span><span class="block-label">Stack</span><span class="block-desc">Java, Spring Boot, DB, Infra</span></span>
-              </a>
-              <a class="block-link" href="#projects">
-                <span class="tetro shape-l" style="--block: var(--blue); --block-dark: #1a4e7e;" aria-hidden="true">
-                  <span class="cell c1"></span><span class="cell c2"></span><span class="cell c3"></span><span class="cell c4"></span>
-                </span>
-                <span><span class="block-label">Projects</span><span class="block-desc">Flowre, Compliment Lab, Data Lab</span></span>
-              </a>
-              <a class="block-link" href="#learning">
-                <span class="tetro shape-z" style="--block: var(--yellow); --block-dark: #9a7400;" aria-hidden="true">
-                  <span class="cell c1"></span><span class="cell c2"></span><span class="cell c3"></span><span class="cell c4"></span>
-                </span>
-                <span><span class="block-label">Learning</span><span class="block-desc">테스트와 협업으로 성장하기</span></span>
-              </a>
-            </div>
-          </nav>
+    <span class="floating-piece one tetro shape-i" style="--block: var(--red); --shadow:#b83a29; --border:#8b2718;" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span class="floating-piece two tetro shape-o" style="--block: var(--blue); --shadow:#2d6fab; --border:#1a4e7e;" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span class="floating-piece three tetro shape-t" style="--block: var(--green); --shadow:#3d8b3d; --border:#236223;" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+
+    <main class="wrap">
+      <header class="hero" id="top">
+        <span class="tag">🎮 다연이의 개발 공간</span>
+        <h1>안녕, 나는<br><span class="handle">@K-Dayeon03</span> 이야</h1>
+        <svg class="scribble" viewBox="0 0 190 16" aria-hidden="true">
+          <path d="M4 11 Q48 4 95 9 Q143 14 186 7" stroke="#e85d4a" stroke-width="4" fill="none" stroke-linecap="round" />
+        </svg>
+        <p class="intro">
+          Spring Boot와 Java를 중심으로 서비스 구조, API, 테스트, 협업 기록을 블록처럼 차곡차곡 쌓아갑니다.
+        </p>
+        <div class="top-actions">
+          <button class="mini-button primary" id="open-add-modal" type="button">＋ 블록 추가</button>
+          <button class="mini-button" id="toggle-edit-mode" type="button">✏️ 블록 편집</button>
+          <a class="mini-button" href="https://github.com/K-Dayeon03" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
-      </section>
+      </header>
 
-      <section id="about">
-        <div class="wrap">
-          <div class="section-head">
-            <div>
-              <span class="eyebrow">About Me</span>
-              <h2>문제를 먼저 이해하고, 구조를 고민합니다.</h2>
-            </div>
-          </div>
-          <div class="about-grid">
-            <div class="panel code-card">
-<pre><code>public class DayeonKang {
-    private final String role = "Backend Developer";
-    private final String mainStack = "Java, Spring Boot";
-    private final String interest = "사용자 경험을 고려한 API와 서비스 구조";
+      <nav class="link-board" id="link-board" aria-label="주요 링크"></nav>
 
-    public void grow() {
-        defineProblemFromUserView();
-        designReadableStructure();
-        collaborateWithTeam();
-        improveThroughTesting();
-    }
-}</code></pre>
-            </div>
-            <ul class="note-list">
-              <li>현재 Spring Boot 기반 백엔드 개발을 중심으로 성장하고 있습니다.</li>
-              <li>기능 구현에서 멈추지 않고, 사용자가 실제로 겪는 흐름과 문제를 함께 고민합니다.</li>
-              <li>팀 프로젝트를 통해 협업, 소통, 테스트, 기록의 중요성을 배웠습니다.</li>
-              <li>Java/Spring 기반 API 개발과 함께 React Native, TypeScript, 데이터 분석도 경험하고 있습니다.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="stack">
-        <div class="wrap">
-          <div class="section-head">
-            <div>
-              <span class="eyebrow">Tech Stack</span>
-              <h2>서비스를 단단하게 만드는 도구들</h2>
-            </div>
-          </div>
-          <div class="stack-grid">
-            <article class="panel stack-card">
-              <h3>Backend</h3>
-              <div class="badges">
-                <span class="badge" style="background:#007396;">Java 17</span>
-                <span class="badge" style="background:#6db33f;">Spring Boot</span>
-                <span class="badge" style="background:#5a9f40;">Spring Security</span>
-                <span class="badge" style="background:#59666c;">JPA</span>
-                <span class="badge" style="background:#111827;">MyBatis</span>
-                <span class="badge" style="background:#0052cc;">REST API</span>
-              </div>
-            </article>
-            <article class="panel stack-card">
-              <h3>Database &amp; Infra</h3>
-              <div class="badges">
-                <span class="badge" style="background:#4479a1;">MySQL</span>
-                <span class="badge" style="background:#dc382d;">Redis</span>
-                <span class="badge" style="background:#2496ed;">Docker</span>
-                <span class="badge" style="background:#ff9900;">AWS EC2</span>
-                <span class="badge" style="background:#569a31;">AWS S3</span>
-              </div>
-            </article>
-            <article class="panel stack-card">
-              <h3>Frontend &amp; Tools</h3>
-              <div class="badges">
-                <span class="badge" style="background:#3178c6;">TypeScript</span>
-                <span class="badge" style="background:#2b9eb3;">React Native</span>
-                <span class="badge" style="background:#f7df1e;color:#1f2937;">JavaScript</span>
-                <span class="badge" style="background:#f37626;">Jupyter</span>
-                <span class="badge" style="background:#f05032;">Git</span>
-                <span class="badge" style="background:#2088ff;">GitHub Actions</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section id="projects">
-        <div class="wrap">
-          <div class="section-head">
-            <div>
-              <span class="eyebrow">Featured Projects</span>
-              <h2>만들고, 연결하고, 개선한 기록</h2>
-            </div>
-          </div>
-          <div class="projects-grid">
-            <a class="project-card" href="https://github.com/K-Dayeon03/Flowre-project" target="_blank" rel="noopener noreferrer">
-              <h3>Flowre-project</h3>
-              <p>오프라인 매장 직원과 본사 직원이 스케줄, 문서, 채팅, 공지, 재고를 함께 관리하는 통합 업무관리 플랫폼입니다.</p>
-              <div class="tech">
-                <span>Spring Boot</span><span>Java 17</span><span>React Native</span><span>MySQL</span><span>Redis</span><span>Docker</span><span>AWS</span>
-              </div>
-            </a>
-            <a class="project-card" href="https://github.com/SWYP-Raven/compliment-lab-server" target="_blank" rel="noopener noreferrer">
-              <h3>compliment-lab-server</h3>
-              <p>친구, 사용자, 칭찬 도메인을 중심으로 인증과 API 구조를 구현한 Spring Boot 백엔드 서버입니다.</p>
-              <div class="tech">
-                <span>Spring Boot 3.5</span><span>Java 17</span><span>JPA</span><span>Security</span><span>JWT</span><span>Swagger</span>
-              </div>
-            </a>
-            <a class="project-card" href="https://github.com/K-Dayeon03/python-data-lab" target="_blank" rel="noopener noreferrer">
-              <h3>python-data-lab</h3>
-              <p>Python/Jupyter Notebook 기반 데이터 실습과 분석 흐름을 학습하며 정리한 공간입니다.</p>
-              <div class="tech">
-                <span>Python</span><span>Jupyter Notebook</span><span>Data Analysis</span>
-              </div>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <section id="highlights">
-        <div class="wrap">
-          <div class="section-head">
-            <div>
-              <span class="eyebrow">Project Highlights</span>
-              <h2>프로젝트 안에서 깊게 고민한 부분</h2>
-            </div>
-          </div>
-          <div class="highlight-grid">
-            <article class="panel highlight">
-              <h3>Flowre</h3>
-              <code>입점 매장 업무관리 플랫폼</code>
-              <ul>
-                <li>역할 기반 권한과 브랜드 단위 데이터 격리 구조를 설계했습니다.</li>
-                <li>JWT 인증, Spring Security, STOMP WebSocket 채팅, Redis, AWS S3를 활용했습니다.</li>
-                <li>매장 등록, 직원 승인, 스케줄, 문서, 공지, 재고 관리 기능을 구현했습니다.</li>
-                <li>서버/클라이언트 테스트와 GitHub Actions 기반 CI 구성을 경험했습니다.</li>
-              </ul>
-            </article>
-            <article class="panel highlight">
-              <h3>Compliment Lab Server</h3>
-              <code>칭찬과 관계 데이터를 다루는 백엔드 서버</code>
-              <ul>
-                <li>사용자, 친구, 칭찬 도메인 중심의 API 구조를 설계했습니다.</li>
-                <li>JWT 기반 인증 흐름과 Spring Security 설정을 구현했습니다.</li>
-                <li>공통 응답, 예외 처리, Swagger 문서화 구성을 정리했습니다.</li>
-                <li>Docker와 GitHub Actions를 활용한 배포 흐름을 경험했습니다.</li>
-              </ul>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section id="learning">
-        <div class="wrap">
-          <div class="section-head">
-            <div>
-              <span class="eyebrow">Currently Learning</span>
-              <h2>요즘 집중하고 있는 성장 방향</h2>
-            </div>
-          </div>
-          <div class="learning-grid">
-            <article class="learning-card"><strong>Spring Boot</strong><span>계층형 구조와 도메인 책임을 더 명확하게 설계하기</span></article>
-            <article class="learning-card"><strong>Security &amp; JWT</strong><span>인증/인가 흐름을 안정적으로 이해하고 구현하기</span></article>
-            <article class="learning-card"><strong>Database</strong><span>조회 성능, 데이터 모델링, 트랜잭션 흐름 익히기</span></article>
-            <article class="learning-card"><strong>Testing</strong><span>변경에 강한 서비스를 위한 테스트 습관 만들기</span></article>
-          </div>
-        </div>
-      </section>
-
-      <section id="values">
-        <div class="wrap">
-          <div class="section-head">
-            <div>
-              <span class="eyebrow">Development Values</span>
-              <h2>개발할 때 놓치고 싶지 않은 기준</h2>
-            </div>
-            <span class="process">Understand -> Design -> Build -> Test</span>
-          </div>
-          <div class="values-grid">
-            <article class="value-card"><strong>User First</strong><span>사용자 흐름에서 문제를 찾습니다.</span></article>
-            <article class="value-card"><strong>Clean Structure</strong><span>읽기 쉽고 유지보수 가능한 구조를 고민합니다.</span></article>
-            <article class="value-card"><strong>Teamwork</strong><span>함께 이해할 수 있는 기록과 소통을 중요하게 생각합니다.</span></article>
-            <article class="value-card"><strong>Testing</strong><span>작은 변경도 안정적으로 개선하려고 노력합니다.</span></article>
-          </div>
-        </div>
-      </section>
+      <footer class="score-footer">
+        <span>BLOCKS: <strong id="block-count">02</strong></span>
+        <span>LEVEL: <strong>01</strong></span>
+        <span>STACK: <strong>SPRING</strong></span>
+      </footer>
     </main>
 
-    <footer class="footer">
-      <div class="wrap">
-        <p>
-          꾸준히 배우고, 만들고, 개선하며 사용자에게 더 좋은 경험을 주는 백엔드 개발자로 성장하고 있습니다.
-        </p>
-        <div class="footer-bar" aria-hidden="true"></div>
-      </div>
-    </footer>
+    <div class="modal-backdrop" id="add-modal" aria-hidden="true">
+      <form class="modal" id="add-block-form">
+        <h2 id="modal-title">🧩 새 블록 추가</h2>
+        <div class="field">
+          <label for="block-label">제목 *</label>
+          <input id="block-label" name="label" type="text" placeholder="예: Velog" required />
+        </div>
+        <div class="field">
+          <label for="block-url">링크 URL *</label>
+          <input id="block-url" name="url" type="text" placeholder="https://..." required />
+        </div>
+        <div class="field">
+          <label for="block-desc">설명</label>
+          <input id="block-desc" name="description" type="text" placeholder="짧은 설명" />
+        </div>
+        <div class="field">
+          <label for="block-emoji">아이콘</label>
+          <input id="block-emoji" name="emoji" type="text" value="🔗" maxlength="4" />
+        </div>
+        <div class="field">
+          <label for="block-color">색상</label>
+          <select id="block-color" name="color">
+            <option value="red">빨강</option>
+            <option value="blue">파랑</option>
+            <option value="green">초록</option>
+            <option value="purple">보라</option>
+            <option value="orange">주황</option>
+            <option value="cyan">청록</option>
+            <option value="yellow">노랑</option>
+            <option value="pink">핑크</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="block-shape">블록 모양</label>
+          <select id="block-shape" name="shape">
+            <option value="shape-t">T</option>
+            <option value="shape-l">L</option>
+            <option value="shape-o">O</option>
+            <option value="shape-s">S</option>
+            <option value="shape-z">Z</option>
+            <option value="shape-j">J</option>
+            <option value="shape-i">I</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="mini-button primary" id="save-block" type="submit">추가하기 ✓</button>
+          <button class="mini-button delete" id="delete-block" type="button">삭제</button>
+          <button class="mini-button cancel" id="close-add-modal" type="button">취소</button>
+        </div>
+      </form>
+    </div>
   </div>
+  <script>
+    const palette = {
+      red: { block: "#e85d4a", shadow: "#b83a29", border: "#8b2718" },
+      blue: { block: "#4a90d9", shadow: "#2d6fab", border: "#1a4e7e" },
+      green: { block: "#5cb85c", shadow: "#3d8b3d", border: "#236223" },
+      purple: { block: "#9b59b6", shadow: "#7d3d9c", border: "#5c2475" },
+      orange: { block: "#e67e22", shadow: "#b85e0c", border: "#8a4000" },
+      cyan: { block: "#1abc9c", shadow: "#0e8c72", border: "#056050" },
+      yellow: { block: "#f5c842", shadow: "#c99e1a", border: "#9a7400" },
+      pink: { block: "#e91e8c", shadow: "#b30060", border: "#7a003f" }
+    };
+
+    const defaultBlocks = [
+      {
+        label: "블로그 글",
+        url: "https://dayeon03.tistory.com",
+        description: "개발 기록",
+        emoji: "✏️",
+        color: "red",
+        shape: "shape-t"
+      },
+      {
+        label: "GitHub",
+        url: "https://github.com/K-Dayeon03",
+        description: "프로젝트 모음",
+        emoji: "📝",
+        color: "blue",
+        shape: "shape-l"
+      }
+    ];
+
+    const shapes = ["shape-t", "shape-l", "shape-o", "shape-s", "shape-z", "shape-j", "shape-i"];
+    const board = document.querySelector("#link-board");
+    const modal = document.querySelector("#add-modal");
+    const form = document.querySelector("#add-block-form");
+    const count = document.querySelector("#block-count");
+    const modalBox = document.querySelector(".modal");
+    const modalTitle = document.querySelector("#modal-title");
+    const saveButton = document.querySelector("#save-block");
+    const deleteButton = document.querySelector("#delete-block");
+    const editToggle = document.querySelector("#toggle-edit-mode");
+    const storageKey = "dayeon-tetris-blocks-v2";
+    const legacyStorageKey = "dayeon-tetris-links";
+    let editMode = false;
+    let editingIndex = null;
+    let blocks = loadBlocks();
+
+    function normalizeUrl(url) {
+      const trimmed = url.trim();
+      if (/^(https?:|mailto:|tel:)/i.test(trimmed)) return trimmed;
+      return `https://${trimmed}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function safeShape(shape) {
+      return shapes.includes(shape) ? shape : "shape-t";
+    }
+
+    function normalizeBlock(block) {
+      return {
+        label: String(block.label || "새 링크").trim(),
+        url: normalizeUrl(String(block.url || "")),
+        description: String(block.description || "추가한 링크").trim(),
+        emoji: String(block.emoji || "🔗").trim() || "🔗",
+        color: palette[block.color] ? block.color : "red",
+        shape: safeShape(block.shape)
+      };
+    }
+
+    function createBlockCard(block) {
+      const colors = palette[block.color] || palette.red;
+      const card = document.createElement("a");
+      card.className = "block-card";
+      card.href = normalizeUrl(block.url);
+      card.target = "_blank";
+      card.rel = "noopener noreferrer";
+      card.style.color = colors.border;
+      card.style.setProperty("--border", colors.border);
+      card.innerHTML = `
+        <span class="tetro ${safeShape(block.shape)}" style="--block:${colors.block}; --shadow:${colors.shadow}; --border:${colors.border};" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="label">${escapeHtml(block.emoji || "🔗")} ${escapeHtml(block.label)}</span>
+        <span class="desc">${escapeHtml(block.description || "추가한 링크")}</span>
+      `;
+      return card;
+    }
+
+    function readStorage(key) {
+      try {
+        return JSON.parse(localStorage.getItem(key)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function loadBlocks() {
+      const saved = readStorage(storageKey);
+      if (saved.length) return saved.map(normalizeBlock);
+
+      const legacy = readStorage(legacyStorageKey);
+      if (legacy.length) {
+        return [...defaultBlocks, ...legacy].map(normalizeBlock);
+      }
+
+      return defaultBlocks.map(normalizeBlock);
+    }
+
+    function saveBlocks() {
+      localStorage.setItem(storageKey, JSON.stringify(blocks));
+    }
+
+    function updateCount() {
+      count.textContent = String(blocks.length).padStart(2, "0");
+    }
+
+    function renderBlocks() {
+      board.innerHTML = "";
+      blocks.forEach((block, index) => {
+        const card = createBlockCard(block);
+        card.dataset.index = index;
+        card.addEventListener("click", (event) => {
+          if (!editMode) return;
+          event.preventDefault();
+          openEditModal(index);
+        });
+        board.appendChild(card);
+      });
+      board.classList.toggle("edit-mode", editMode);
+      updateCount();
+    }
+
+    function openModal(mode, index = null) {
+      editingIndex = index;
+      const isEdit = mode === "edit";
+      modalBox.classList.toggle("editing", isEdit);
+      modalTitle.textContent = isEdit ? "✏️ 블록 편집" : "🧩 새 블록 추가";
+      saveButton.textContent = isEdit ? "저장하기 ✓" : "추가하기 ✓";
+
+      if (isEdit) {
+        const block = blocks[index];
+        form.elements.label.value = block.label;
+        form.elements.url.value = block.url;
+        form.elements.description.value = block.description;
+        form.elements.emoji.value = block.emoji;
+        form.elements.color.value = block.color;
+        form.elements.shape.value = block.shape;
+      } else {
+        form.reset();
+        form.elements.emoji.value = "🔗";
+      }
+
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      form.elements.label.focus();
+    }
+
+    function openAddModal() {
+      openModal("add");
+    }
+
+    function openEditModal(index) {
+      openModal("edit", index);
+    }
+
+    function closeModal() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      form.reset();
+      form.elements.emoji.value = "🔗";
+      editingIndex = null;
+      modalBox.classList.remove("editing");
+    }
+
+    renderBlocks();
+
+    document.querySelector("#open-add-modal").addEventListener("click", openAddModal);
+    editToggle.addEventListener("click", () => {
+      editMode = !editMode;
+      editToggle.classList.toggle("active", editMode);
+      editToggle.textContent = editMode ? "✓ 블록 편집 완료" : "✏️ 블록 편집";
+      renderBlocks();
+    });
+    document.querySelector("#close-add-modal").addEventListener("click", closeModal);
+    deleteButton.addEventListener("click", () => {
+      if (editingIndex === null) return;
+      blocks.splice(editingIndex, 1);
+      saveBlocks();
+      renderBlocks();
+      closeModal();
+    });
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closeModal();
+    });
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && modal.classList.contains("open")) closeModal();
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const block = normalizeBlock({
+        label: data.get("label"),
+        url: data.get("url"),
+        description: data.get("description"),
+        emoji: data.get("emoji"),
+        color: data.get("color"),
+        shape: data.get("shape")
+      });
+
+      if (editingIndex === null) {
+        blocks.push(block);
+      } else {
+        blocks[editingIndex] = block;
+      }
+
+      saveBlocks();
+      renderBlocks();
+      closeModal();
+    });
+  </script>
 </body>
 </html>
